@@ -167,7 +167,7 @@ useEffect(() => {
               <img src={user?.user?.avatar?.url} alt={user?.user?.name}  title={user?.user?.name} className="h-7 w-7 rounded-full cursor-pointer object-cover"/>
             ) : (
               <div className="h-7 w-7 rounded-full cursor-pointer bg-gray-300 flex items-center justify-center">
-                <span  className="profile-button"onClick={()=>setProfileOpen(true)} className="text-xs text-gray-600">
+                <span  onClick={()=>setProfileOpen(true)} className="profile-button text-xs text-gray-600">
                   {user?.user?.name ? user?.user?.name.charAt(0).toUpperCase() : 'U'}
                   </span >
               </div>
