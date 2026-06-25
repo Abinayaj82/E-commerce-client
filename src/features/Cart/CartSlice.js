@@ -49,8 +49,8 @@ export const removeCartItems = createAsyncThunk("cart/removeCartItems", async (p
 //clear cart
 export const clearCart = createAsyncThunk("cart/clearCart", async (_,{rejectWithValue})=>{
     try{
-        const {date} = await api.delete("api/v1/cart/clear");
-        return date;
+        const {data} = await api.delete("/api/v1/cart/clear");
+        return data;
     } catch (error) {
         return rejectWithValue(error.response?.data || "Something went wrong");
     }

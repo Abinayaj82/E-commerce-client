@@ -160,7 +160,7 @@ const userSlice = createSlice({
             state.success = null;
         },
         removeLoginSuccess: (state) => {
-         state.logoutSuccess = false;
+         state.loginSuccess = false;
    },
     
          removeLogoutSuccess: (state) => {
@@ -242,9 +242,8 @@ const userSlice = createSlice({
             .addCase(getUserProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload?.message || "Failed to fetch user profile";
-                state.user = null;
-                state.isAuthenticated = false;
-                if(action.payload?.statusCode === 401){
+                // Only clear auth state on 401 Unauthorized — not on network/server errors
+                if (action.payload?.statusCode === 401 || action.payload?.message === "Please login to access this resource") {
                     state.user = null;
                     state.isAuthenticated = false;
                     localStorage.removeItem("user");
