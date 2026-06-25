@@ -1,5 +1,5 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../utils/api";
 
 export const paymentProcess = createAsyncThunk("payment/process", async (amount, {rejectWithValue}) => {
     try {
@@ -9,7 +9,7 @@ export const paymentProcess = createAsyncThunk("payment/process", async (amount,
             },
             withCredentials: true,
         };
-        const {data} = await axios.post("/api/v1/payment/process", {amount}, config)
+        const {data} = await api.post("/api/v1/payment/process", {amount}, config)
         return data;
         console.log(data);
     } catch (error) {
@@ -26,7 +26,7 @@ export const paymentVerify = createAsyncThunk("payment/verify", async (paymentDa
             },
             withCredentials:true,
         }
-        const {data} = await axios.post("/api/v1/payment/verify", paymentData, config);
+        const {data} = await api.post("/api/v1/payment/verify", paymentData, config);
         return data;
     }catch (error){
       return rejectWithValue(error.response?.data || "Payment verification failed")

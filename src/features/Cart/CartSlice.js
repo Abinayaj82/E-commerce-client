@@ -1,9 +1,9 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../utils/api";
 
 export const addCartItems = createAsyncThunk("cart/addItems", async (productData ,{rejectWithValue})=>{
     try {
-        const {data} = await axios.post("/api/v1/cart/add", productData)
+        const {data} = await api.post("/api/v1/cart/add", productData)
        // console.log(data)
 
         return data
@@ -14,7 +14,7 @@ export const addCartItems = createAsyncThunk("cart/addItems", async (productData
 //get cart items
 export const getCartItems = createAsyncThunk("cart/getItems", async (_, {rejectWithValue})=>{
     try {
-        const {data} = await axios.get("/api/v1/cart/getItems")
+        const {data} = await api.get("/api/v1/cart/getItems")
        // console.log(data)
 
         return data
@@ -25,7 +25,7 @@ export const getCartItems = createAsyncThunk("cart/getItems", async (_, {rejectW
 // update quantity
 export const updateQuantity = createAsyncThunk("cart/updateQuantity", async ({productId,quantity}, {rejectWithValue})=>{
     try {
-        const {data} = await axios.put("/api/v1/cart/update" , {productId, quantity})
+        const {data} = await api.put("/api/v1/cart/update" , {productId, quantity})
        // console.log(data)
 
         return data
@@ -38,7 +38,7 @@ export const updateQuantity = createAsyncThunk("cart/updateQuantity", async ({pr
 
 export const removeCartItems = createAsyncThunk("cart/removeCartItems", async (productId, {rejectWithValue})=>{
     try {
-        const {data} = await axios.delete(`/api/v1/cart/delete/${productId}`)
+        const {data} = await api.delete(`/api/v1/cart/delete/${productId}`)
        // console.log(data)
        // console.log(productId)
         return data
@@ -49,7 +49,7 @@ export const removeCartItems = createAsyncThunk("cart/removeCartItems", async (p
 //clear cart
 export const clearCart = createAsyncThunk("cart/clearCart", async (_,{rejectWithValue})=>{
     try{
-        const {date} = await axios.delete("api/v1/cart/clear");
+        const {date} = await api.delete("api/v1/cart/clear");
         return date;
     } catch (error) {
         return rejectWithValue(error.response?.data || "Something went wrong");

@@ -1,5 +1,5 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../utils/api";
 
 export const getProduct = createAsyncThunk("product/getProduct", async ({ keyword, page=1, category }, {rejectWithValue}) => {
     try {
@@ -11,7 +11,7 @@ export const getProduct = createAsyncThunk("product/getProduct", async ({ keywor
         if(keyword){
             link += `&keyword=${encodeURIComponent(keyword)}`;
         }
-        const {data}= await axios.get(link);
+        const {data}= await api.get(link);
         //console.log(data);
         
         return data;
@@ -23,7 +23,7 @@ export const getProduct = createAsyncThunk("product/getProduct", async ({ keywor
 export const getProductDetail = createAsyncThunk("product/getProductDetail", async (_id, {rejectWithValue}) => {
     try {
         const link =`/api/v1/product/${_id}`;
-        const {data}= await axios.get(link);
+        const {data}= await api.get(link);
         
         //console.log(data);
         return data;
@@ -40,7 +40,7 @@ export const productReview = createAsyncThunk("/product/review", async(reviewDat
             },
             withCredentials:true,
         }
-        const { data} = await axios.put("/api/v1/reviews",reviewData, config);
+        const { data} = await api.put("/api/v1/reviews",reviewData, config);
         return data;
     } catch (error) {
           return rejectWithValue(error.response?.data || "Something went wrong");
