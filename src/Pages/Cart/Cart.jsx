@@ -5,12 +5,14 @@ import { useEffect} from 'react'
 import toast from 'react-hot-toast'
 import CheckOutSteps from '../../Components/CheckOutSteps'
 import PageTitle from '../../Components/PageTitle'
+import { useNavigate } from 'react-router-dom'
 
 
 const Cart = () => {
     const { cartItems , loading, error,success} = useSelector((state)=>state.cart)
     //console.log(cartItems)
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const itemsPrice = cartItems.reduce(
              (acc, item) => acc + item.price * item.quantity, 0
       );
@@ -143,7 +145,7 @@ const Cart = () => {
 
       {/* Checkout button */}
       <button
-        onClick={() => window.location.href = "/shipping"}
+        onClick={() => navigate("/shipping")}
         disabled={cartItems.length === 0}
         className="w-full bg-[#718b13] text-white py-3 rounded-xl text-sm 
                    font-medium hover:bg-[#5a6e0f] transition disabled:opacity-50 

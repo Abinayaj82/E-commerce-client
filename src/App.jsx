@@ -16,7 +16,7 @@ function AppInner() {
     if (isAuthenticated) {
       dispatch(getUserProfile());
     }
-  }, [dispatch]);
+  }, [dispatch, isAuthenticated]);
 
   return (
     <>

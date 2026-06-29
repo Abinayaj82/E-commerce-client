@@ -140,8 +140,7 @@ const cartSlice = createSlice({
              state.loading = false,
              state.error = null,
              state.cartItems = action.payload.cartItems,
-              localStorage.removeItem("cartItems",JSON.stringify([])
-   )
+             localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
           })
           .addCase(removeCartItems.rejected,(state,action)=>{
             state.loading = false,
@@ -157,8 +156,7 @@ const cartSlice = createSlice({
                 state.loading = false,
                 state.error = null,
                 state.cartItems = action.payload.cartItems,
-                localStorage.removeItem("cartItems",JSON.stringify([])
-    )
+                localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
           })
            .addCase(clearCart.rejected,(state,action)=>{
             state.loading = false,

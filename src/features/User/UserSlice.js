@@ -12,7 +12,10 @@ export const registerUser = createAsyncThunk("user/registerUser", async (formDat
         return data;
         //console.log(data);
     } catch (error) {
-        return rejectWithValue(error.response?.data || "Something went wrong");
+        return rejectWithValue({
+        message: error.response?.data?.message || "Registration failed",
+        statusCode: error.response?.status,
+      });
         
     }
 })
@@ -23,7 +26,10 @@ export const getUserProfile = createAsyncThunk("user/getUserProfile", async (use
         const {data} = await api.get('/api/v1/user/profile')
         return data;
     } catch (error) {
-        return rejectWithValue(error.response?.data || "Failed to fetch user profile");
+        return rejectWithValue({
+        message: error.response?.data?.message || "Failed to fetch user profile",
+        statusCode: error.response?.status, // ✅ real HTTP status from axios
+      });
     }
 })
 
@@ -40,7 +46,10 @@ export const loginUser = createAsyncThunk("user/loginUser", async ({email, passw
         return data;
     } catch (error) {
         console.log("LOGIN ERROR:", error.response);
-        return rejectWithValue(error.response?.data || "Something went wrong");
+        return rejectWithValue({
+        message: error.response?.data?.message || "Invalid email or password",
+        statusCode: error.response?.status,
+      });
     }
 })
 //Logout user
@@ -50,7 +59,10 @@ export const logoutUser = createAsyncThunk("user/logoutUser", async (_, {rejectW
         localStorage.removeItem("user");
         localStorage.removeItem("isAuthenticated");
     } catch (error) {
-        return rejectWithValue(error.response?.data || "Something went wrong");
+        return rejectWithValue({
+        message: error.response?.data?.message || "Logout failed",
+        statusCode: error.response?.status,
+      });
     }
 })
 // update user profile
@@ -64,7 +76,10 @@ export const updateUserProfile = createAsyncThunk("user/updateUserProfile", asyn
         const {data} = await api.put("/api/v1/user/update-profile", formData, config)
         return data;
     } catch (error) {
-        return rejectWithValue(error.response?.data || "Something went wrong");
+        return rejectWithValue({
+        message: error.response?.data?.message || "Failed to update profile",
+        statusCode: error.response?.status,
+      });
     }
 })
 
@@ -79,7 +94,10 @@ export const updatePassword = createAsyncThunk("user/updatePassword", async (for
         const {data} = await api.put("/api/v1/user/update-password", formData, config)
         return data;
     } catch (error) {
-        return rejectWithValue(error.response?.data || "Something went wrong");
+        return rejectWithValue({
+        message: error.response?.data?.message || "Failed to update password",
+        statusCode: error.response?.status,
+      });
     }
 })
 
@@ -95,7 +113,10 @@ export const updatePassword = createAsyncThunk("user/updatePassword", async (for
        // console.log(data)
         return data
      } catch (error) {
-        return rejectWithValue(error.response?.data || "Something went wrong");
+        return rejectWithValue({
+        message: error.response?.data?.message || "Something went wrong",
+        statusCode: error.response?.status,
+      });
         
      }
    })
@@ -110,7 +131,10 @@ export const updatePassword = createAsyncThunk("user/updatePassword", async (for
        const { data } = await api.post(`/api/v1/user/reset-password/${token}`, userData ,config)
        console.log(data)
   } catch (error){
-        return rejectWithValue(error.response?.data || "Reset password failed");
+        return rejectWithValue({
+        message: error.response?.data?.message || "Reset password failed",
+        statusCode: error.response?.status,
+      });
     }
    })
    //save address
@@ -124,7 +148,10 @@ export const updatePassword = createAsyncThunk("user/updatePassword", async (for
         const {data } = await api.post("api/v1/user/saveAddress", addressData , config)
         return data;
     } catch(error){
-        return rejectWithValue(error.response?.data || "Failed to save address");
+        return rejectWithValue({
+        message: error.response?.data?.message || "Failed to save address",
+        statusCode: error.response?.status,
+      });
    }
     })
 
@@ -145,8 +172,8 @@ const initialState ={
     updateSuccess: false,
     updatePasswordSuccess: false,
     forgetPasswordSuccess: false,
-    resetPasswordSuccess:false
-
+    resetPasswordSuccess:false,
+    shippingAddress: localStorage.getItem("shippingAddress") ? JSON.parse(localStorage.getItem("shippingAddress")) : null
 }
 
 const userSlice = createSlice({
@@ -233,7 +260,8 @@ const userSlice = createSlice({
             .addCase(getUserProfile.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
-                state.user = action.payload;
+                const token = state.user?.token || JSON.parse(localStorage.getItem("user"))?.token;
+                state.user = { ...action.payload, token };
                 state.success = action.payload?.user || null;
                 state.isAuthenticated = Boolean(action.payload?.user) ;
                 localStorage.setItem("user", JSON.stringify(state.user));
@@ -284,7 +312,8 @@ const userSlice = createSlice({
             .addCase(updateUserProfile.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
-                state.user = action.payload;
+                const token = state.user?.token || JSON.parse(localStorage.getItem("user"))?.token;
+                state.user = { ...action.payload, token };
                 state.updateSuccess = true;
                 state.isAuthenticated = Boolean(action.payload?.user) ;
                 localStorage.setItem("user", JSON.stringify(state.user));
@@ -378,10 +407,13 @@ const userSlice = createSlice({
             .addCase(saveAddress.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
-                state.user.shippingAddress = action.payload.shippingAddress;
+                state.shippingAddress = action.payload.shippingAddress;
+                if (state.user && state.user.user) {
+                    state.user.user.shippingAddress = action.payload.shippingAddress;
+                    localStorage.setItem("user", JSON.stringify(state.user));
+                }
                 state.success = true;
-                localStorage.setItem( "shippingAddress", JSON.stringify(state.user)
-    );
+                localStorage.setItem("shippingAddress", JSON.stringify(action.payload.shippingAddress));
             })
             .addCase(saveAddress.rejected, (state, action) => {
                 state.loading = false;
